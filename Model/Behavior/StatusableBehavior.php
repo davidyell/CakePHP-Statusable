@@ -19,18 +19,24 @@ class StatusableBehavior extends ModelBehavior {
  */
     public $defaults = array(
         'statusTable' => 'statuses',    // The name of the table in the db
-        'statusModel' => 'Status',      // The model name matching the db table
+        'statusModel' => 'Status',      // The model name following convention
         'fields' => array(
-            'status' => 'status_id',    // The foreign key field in your db
+            'status' => 'status_id',        // The foreign key field in your db
             'deletedDate' => 'deleted_date' // The deletion date field name
         ),
         'statuses' => array(
-            1 => 'Live',        // Displayed on the site, everyone can see it
-            2 => 'Inactive',    // Only displayed to administrators
-            3 => 'Protected live',   // Cannot be deleted, but is displayed
-            4 => 'Protected inactive',   // Cannot be deleted, but is displayed
-            5 => 'Archived',    // No longer in use but might be needed
-            6 => 'Deleted'      // Will not display to admins or users
+            'displayed' => array(
+                1 => 'Live',            // Displayed on the site, everyone can see it
+                3 => 'Protected live',  // Cannot be deleted, but is displayed
+            ),
+            'adminOnly' => array(
+                2 => 'Inactive',            // Only displayed to administrators
+                4 => 'Protected inactive',  // Cannot be deleted, but is not displayed
+                5 => 'Archived',            // No longer in use but might be needed
+            ),
+            'deleted' => array(
+                6 => 'Deleted'  // Will not display to admins or users
+            )
         ),
         'modifyModified' => true,   // Should the behaviour change the modified date when updating records?
         'adminPrefix' => 'admin'    // What is the name of your admin prefix?
@@ -74,7 +80,7 @@ class StatusableBehavior extends ModelBehavior {
  */
     public function beforeDelete(Model $model, $cascade = true) {
         
-        
+        // TODO: Implement this method
         return false;
     }
 
@@ -87,39 +93,36 @@ class StatusableBehavior extends ModelBehavior {
  * @return array
  */
     public function beforeFind(Model $model, $query) {
-        $live = array('status_id' => array(1,3));
-        $admin = array('status_id !=' => 6);
+        $liveConditions = array('status_id' => array_keys($this->settings[$model->alias]['statuses']['displayed']));
+        $adminConditions = array('status_id !=' => key($this->settings[$model->alias]['statuses']['deleted']));
         
         if (isset($model->prefix) && $model->prefix == $this->settings[$model->alias]['adminPrefix']) {
-            $query['conditions'] = array_merge($query['conditions'], $admin);
-        } else {
-            $query['conditions'] = array_merge($query['conditions'], $live);
-        }
-        
-        // Add Status title
-        $query['joins'] = array_merge($query['joins'], array(
-            array(
-                'table' => $this->settings[$model->alias]['statusTable'],
-                'alias' => $this->settings[$model->alias]['statusModel'],
-                'type' => 'LEFT',
-                'conditions' => array(
-                    $model->alias . '.' . $this->settings[$model->alias]['fields']['status'] . ' = ' . $this->settings[$model->alias]['statusModel'] . '.id'
+            $query['conditions'] = array_merge($query['conditions'], $adminConditions);
+            
+            // Join the Status model for easy front-end display
+            $query['joins'] = array_merge($query['joins'], array(
+                array(
+                    'table' => $this->settings[$model->alias]['statusTable'],
+                    'alias' => $this->settings[$model->alias]['statusModel'],
+                    'type' => 'LEFT',
+                    'conditions' => array(
+                        $model->alias . '.' . $this->settings[$model->alias]['fields']['status'] . ' = ' . $this->settings[$model->alias]['statusModel'] . '.id'
+                    )
                 )
-            )
-        ));
-        
-        // Add status fields to the select
-        $statusFields = array(
-            $this->settings[$model->alias]['statusModel'] . '.id',
-            $this->settings[$model->alias]['statusModel'] . '.name',
-        );
-        
-        if ($query['fields'] === null) {
-            $query['fields'] = array('*');
-        }
-        
-        if (!is_string($query['fields'])) {
-            $query['fields'] = array_merge($query['fields'], $statusFields);
+            ));
+            
+            if ($query['fields'] === null) {
+                $query['fields'] = array('*');
+            }
+
+            if (!is_string($query['fields'])) {
+                $query['fields'] = array_merge($query['fields'], array(
+                    $this->settings[$model->alias]['statusModel'] . '.id',
+                    $this->settings[$model->alias]['statusModel'] . '.name',
+                ));
+            }
+        } else {
+            $query['conditions'] = array_merge($query['conditions'], $liveConditions);
         }
         
         return $query;

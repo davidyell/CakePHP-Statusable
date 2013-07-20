@@ -1,6 +1,6 @@
 <?php
 /**
- * Description of StatusableComponent
+ * Component to catch and store the routing prefix used
  *
  * @author David Yell <neon1024@gmail.com>
  */
