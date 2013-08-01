@@ -69,20 +69,6 @@ class StatusableBehavior extends ModelBehavior {
             }
         }
     }
-    
-/**
- * Catch the delete and prevent it to run an update instead to change the status.
- * Also deals with protected items
- * 
- * @param Model $model
- * @param boolean $cascade
- * @return boolean
- */
-    public function beforeDelete(Model $model, $cascade = true) {
-        
-        // TODO: Implement this method
-        return false;
-    }
 
 /**
  * Catch any finds and automagically insert extra conditions to strip out items
@@ -127,6 +113,54 @@ class StatusableBehavior extends ModelBehavior {
         
         return $query;
     }
+	
+/**
+ * Catch the request to delete and route to our own delete method
+ * 
+ * // TODO: Try and remove this, as the controller should be calling the delete
+ * method in the model, which this should overwrite
+ * 
+ * @param Model $model
+ * @param bool $cascade
+ * @return bool
+ */
+	public function beforeDelete(Model $model, $cascade = true) {
+		parent::beforeDelete($model, $cascade);
+		
+		$this->delete($model, $model->data[$model->alias]['id'], $cascade);
+		return false;
+	}
 
-    
+/**
+ * Overwrite the delete method so that we can run an update instead
+ * 
+ * @param Model $model
+ * @param int $id
+ * @param bool $cascade
+ * @return bool
+ */
+    public function delete(Model $model, $id = null, $cascade = true) {
+		if (!empty($id)) {
+			$model->id = $id;
+		}
+		$id = $model->id;
+		
+		$model->recursive = -1;
+		$record = $model->find('first', array(
+			'conditions' => array(
+				$model->alias . '.' . $model->primaryKey => $id
+			)
+		));
+		
+		$model->set($record);
+		$model->set($this->settings[$model->alias]['fields']['status'], key($this->settings[$model->alias]['statuses']['deleted']));
+		$model->save();
+		
+		return false;
+		/**
+		 * TODO: Think about the return that you want to give. Should it be 
+		 * consistent with the rest of the system, or match the delete?
+		 * Should the 'fixing' method be included?
+		 */
+	}
 }
