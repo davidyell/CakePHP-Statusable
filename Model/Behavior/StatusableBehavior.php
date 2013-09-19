@@ -58,7 +58,7 @@ class StatusableBehavior extends ModelBehavior {
     public function setup(Model $model, $config = array()) {
         parent::setup($model, $config);
         
-        $this->settings[$model->alias] = array_merge($this->defaults, $this->settings);
+        $this->settings[$model->alias] = array_merge($this->defaults, $config);
         
         $this->hasField($model);
 		$this->checkPrefix($model);
