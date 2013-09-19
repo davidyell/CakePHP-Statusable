@@ -47,6 +47,13 @@ class StatusableBehavior extends ModelBehavior {
  * @var array
  */
     public $settings = array();
+	
+/**
+ * Store an instance of the model configured for Statuses
+ * 
+ * @var Model $status
+ */
+	public $Status = null;
     
 /**
  * Setup the behaviour and merge in the settings. Check that the model has the
@@ -62,6 +69,10 @@ class StatusableBehavior extends ModelBehavior {
         
         $this->hasField($model);
 		$this->checkPrefix($model);
+		
+		if (!ClassRegistry::isKeySet($this->settings[$model->alias]['statusModel'])) {
+			$this->Status = ClassRegistry::init($this->settings[$model->alias]['statusModel']);
+		}
     }
 	
 /**
@@ -117,7 +128,7 @@ class StatusableBehavior extends ModelBehavior {
             // Join the Status model for easy front-end display
             $query['joins'] = array_merge($query['joins'], array(
                 array(
-                    'table' => Inflector::tableize($this->settings[$model->alias]['statusModel']),
+                    'table' => $this->Status->useTable,
                     'alias' => $this->settings[$model->alias]['statusModel'],
                     'type' => 'LEFT',
                     'conditions' => array(
