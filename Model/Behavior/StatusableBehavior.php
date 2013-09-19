@@ -61,14 +61,44 @@ class StatusableBehavior extends ModelBehavior {
         
         $this->settings[$model->alias] = array_merge($this->defaults, $this->settings);
         
-        // Check that the model has the required fields
+        $this->hasField($model);
+		$this->checkPrefix($model);
+    }
+	
+/**
+ * Ensure that the current model actually has the fields which are configured
+ * for the status.
+ * 
+ * @param Model $model
+ * @return void
+ */
+	private function hasField(Model $model) {
         foreach ($this->settings[$model->alias]['fields'] as $field) {
             if (!$model->hasField($field)) {
-                trigger_error($model->alias . " model doesn't have the field " . $field);
+                trigger_error(__($model->alias . " model doesn't have the field " . $field));
                 return;
             }
         }
-    }
+	}
+	
+/**
+ * Ensure that the configured prefix exists in the core Routing.prefixes config
+ * 
+ * @param Model $model
+ * @return void
+ */
+	private function checkPrefix(Model $model) {
+		$found = false;
+		foreach (Configure::read('Routing.prefixes') as $prefix) {
+			if ($prefix === $this->settings[$model->alias]['adminPrefix']) {
+				$found = true;
+			}
+		}
+		if (!$found) {
+			trigger_error(__("Configured prefix '{$this->settings[$model->alias]['adminPrefix']}' doesn't exist in Routing.prefixes configuration."));
+			return;
+		}
+	}
 
 /**
  * Catch any finds and automagically insert extra conditions to strip out items
@@ -120,6 +150,9 @@ class StatusableBehavior extends ModelBehavior {
  * // TODO: Try and remove this, as the controller should be calling the delete
  * method in the model, which this should overwrite
  * 
+ * // TODO: Think about the return here as returning true will continue the
+ * delete and will probably be destructive
+ * 
  * @param Model $model
  * @param bool $cascade
  * @return bool
@@ -154,13 +187,6 @@ class StatusableBehavior extends ModelBehavior {
 		
 		$model->set($record);
 		$model->set($this->settings[$model->alias]['fields']['status'], key($this->settings[$model->alias]['statuses']['deleted']));
-		$model->save();
-		
-		return false;
-		/**
-		 * TODO: Think about the return that you want to give. Should it be 
-		 * consistent with the rest of the system, or match the delete?
-		 * Should the 'fixing' method be included?
-		 */
+		return (bool)$model->save();
 	}
 }
