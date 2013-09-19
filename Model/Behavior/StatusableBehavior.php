@@ -18,7 +18,6 @@ class StatusableBehavior extends ModelBehavior {
  * TODO: Tidy these options up, don't think there needs to be this many
  */
     public $defaults = array(
-        'statusTable' => 'statuses',    // The name of the table in the db
         'statusModel' => 'Status',      // The model name following convention
         'fields' => array(
             'status' => 'status_id',        // The foreign key field in your db
@@ -118,7 +117,7 @@ class StatusableBehavior extends ModelBehavior {
             // Join the Status model for easy front-end display
             $query['joins'] = array_merge($query['joins'], array(
                 array(
-                    'table' => $this->settings[$model->alias]['statusTable'],
+                    'table' => Inflector::tableize($this->settings[$model->alias]['statusModel']),
                     'alias' => $this->settings[$model->alias]['statusModel'],
                     'type' => 'LEFT',
                     'conditions' => array(
