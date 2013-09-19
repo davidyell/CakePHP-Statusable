@@ -14,7 +14,7 @@ I also make use of the [CakeDC/Utils/SoftDelete](https://github.com/CakeDC/utils
 * You have regular users and administrator users
 
 ##Configuration
-You need to load the plugin in your `app/Config/bootstrap.php` using `CakePlugin::load('Statusable')`, unless you are already using `CakePlugin::loadAll()`.
+You need to load the plugin in your `app/Config/bootstrap.php` using `CakePlugin::load('Statusable')`. You can use `CakePlugin::loadAll()` but it's slow.  
 
 ###Database
 You will also need a table to store your statuses. You can create the default using the following.  
@@ -56,10 +56,10 @@ In your controller, you'll need to add the component.
 ```
 
 ##Proposed features
-* Migration for schema of `statuses` table
-* `Status` model
-* Behaviour using model callbacks to change statuses
-* Behaviour to modify finds to add the extra conditions
-* Borrrow some functionality from the CakeDC/Utils/SoftDelete behaviour in relation to deletion
-* Something to speed up administration of records, like a component which injects a `status_id` field into forms. Might be too much and too narrow a use-case to be helpfull to everyone though.
-* Not too sure on having the statuses in the database or in the behaviour. If they are in the database how will you know which ones are displayable and where?
+- [ ] Migration for schema of `statuses` table
+- [ ] `Status` model
+- [x] Behaviour using model callbacks to change statuses
+- [x] Behaviour to modify finds to add the extra conditions
+- [x] Borrrow some functionality from the CakeDC/Utils/SoftDelete behaviour in relation to deletion
+- [ ] Something to speed up administration of records, like a component which injects a `status_id` field into forms. Might be too much and too narrow a use-case to be helpfull to everyone though.
+- [x] Not too sure on having the statuses in the database or in the behaviour. If they are in the database how will you know which ones are displayable and where? __Allowed configuration in the behaviour__
