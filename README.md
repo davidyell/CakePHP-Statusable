@@ -1,8 +1,7 @@
 CakePHP-Statusable
 ==================
 
-A behaviour to allow model records to have various statuses.  
-This is **alpha** and is currently under development.
+A behaviour to allow model records to have various statuses. Currently under development in the `develop` branch.
 
 ##Why?
 I am always adding a `Status` model and `status_id` fields to my models so that I can mark them as active or inactive.  
