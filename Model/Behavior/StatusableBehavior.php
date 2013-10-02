@@ -73,6 +73,7 @@ class StatusableBehavior extends ModelBehavior {
 		if (!ClassRegistry::isKeySet($this->settings[$model->alias]['statusModel'])) {
 			$this->Status = ClassRegistry::init($this->settings[$model->alias]['statusModel']);
 		}
+		
     }
 	
 /**
