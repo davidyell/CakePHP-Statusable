@@ -1,12 +1,12 @@
 <?php
+App::uses('ModelBehavior', 'Model');
+
 /**
  * A behaviour for CakePHP to take away some of the workload in managing the 
  * status of items in a web app.
  *
  * @author David Yell <neon1024@gmail.com>
  */
-
-App::uses('ModelBehavior', 'Model');
 
 class StatusableBehavior extends ModelBehavior {
     
@@ -53,8 +53,24 @@ class StatusableBehavior extends ModelBehavior {
  * 
  * @var Model $status
  */
-	public $Status = null;
+	protected $Status = null;
+	
+/**
+ * Store the name of the model to which this behaviour has been attached
+ * 
+ * @var Model $modelAlias
+ */
+	protected $modelAlias = null;
     
+/**
+ * Return the configured statuses as an array from the merged settings
+ * 
+ * @return array
+ */
+	public function getStatuses() {
+		return $this->settings[$this->modelAlias]['statuses'];
+	}
+	
 /**
  * Setup the behaviour and merge in the settings. Check that the model has the
  * required fields
@@ -66,14 +82,14 @@ class StatusableBehavior extends ModelBehavior {
         parent::setup($model, $config);
         
         $this->settings[$model->alias] = array_merge($this->defaults, $config);
-        
+		
+		$this->modelAlias = $model->alias;
         $this->hasField($model);
 		$this->checkPrefix($model);
 		
 		if (!ClassRegistry::isKeySet($this->settings[$model->alias]['statusModel'])) {
 			$this->Status = ClassRegistry::init($this->settings[$model->alias]['statusModel']);
 		}
-		
     }
 	
 /**
@@ -83,7 +99,7 @@ class StatusableBehavior extends ModelBehavior {
  * @param Model $model
  * @return void
  */
-	private function hasField(Model $model) {
+	protected function hasField(Model $model) {
         foreach ($this->settings[$model->alias]['fields'] as $field) {
             if (!$model->hasField($field)) {
                 trigger_error(__($model->alias . " model doesn't have the field " . $field));
@@ -98,7 +114,7 @@ class StatusableBehavior extends ModelBehavior {
  * @param Model $model
  * @return void
  */
-	private function checkPrefix(Model $model) {
+	protected function checkPrefix(Model $model) {
 		$found = false;
 		foreach (Configure::read('Routing.prefixes') as $prefix) {
 			if ($prefix === $this->settings[$model->alias]['adminPrefix']) {
