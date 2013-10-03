@@ -1,0 +1,16 @@
+{
+    "name": "davidyell/statusable",
+    "description": "A behaviour to allow model records to have various statuses",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "David Yell",
+            "email": "neon1024@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "type": "cakephp-plugin",
+    "require": {
+        "composer/installers": "~1.0"
+    }
+}
