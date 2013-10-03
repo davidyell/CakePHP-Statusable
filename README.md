@@ -54,6 +54,16 @@ In your controller, you'll need to add the component. I'm hoping to be able to g
     );
 ```
 
+## Load statuses in views
+If you want to add a `status_id` field to your `add` and `edit` actions, the behaviour has a handy method to return a list of statuses.
+```php
+// Controller/ExampleController.php
+$statuses = $this->Example->getStatuses();
+
+// View/Example/edit.ctp
+echo $this->Form->input('status_id');
+```
+
 ##Proposed features
 - [ ] Migration for schema of `statuses` table
 - [ ] `Status` model
