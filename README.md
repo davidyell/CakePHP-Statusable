@@ -36,7 +36,6 @@ Don't forget to set the `status_id` fields default value to your default status.
 
 ###Attach the behaviour to your model
 ```php
-<?php
 // Model/Example.php
     public $actsAs = array(
         'Statusable.Statusable' // If you want to configure the behaviour you can pass options in here
@@ -47,7 +46,6 @@ Configuration options can be passed to the behaviour here if your configuration 
 ###Add component to controller
 In your controller, you'll need to add the component. I'm hoping to be able to get rid of this at some point, but for the meantime, it's needed to get at the routing.
 ```php
-<?php
 // Controller/ExampleController.php
     public $components = array(
         'Statusable.Statusable'
