@@ -37,6 +37,11 @@ class StatusableBehaviorTest extends CakeTestCase {
 		parent::tearDown();
 	}
 
+/**
+ * Check that the statuses can be pulled from the behaviour configuration
+ * 
+ * @return void
+ */
 	public function testGetStatses() {
 		$expected = array(
 			'displayed' => array(
@@ -58,6 +63,11 @@ class StatusableBehaviorTest extends CakeTestCase {
 		$this->assertEqual($result, $expected);
 	}
 	
+/**
+ * Provide data for testing the beforeFind method
+ * 
+ * @return array
+ */
 	public function providerBeforeFind() {
 		return array(
 			array(
@@ -83,6 +93,8 @@ class StatusableBehaviorTest extends CakeTestCase {
 	
 /**
  * @dataProvider providerBeforeFind
+ * 
+ * @return void
  */
 	public function testBeforeFind($prefix, $expected) {
 		$this->Model->prefix = $prefix;
