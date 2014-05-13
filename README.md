@@ -31,8 +31,9 @@ INSERT INTO `statuses` (name, created, modified) VALUES
 ('Deleted', NOW(), NOW())
 ```
 
-You'll need to create the fields for the `status_id` and also the `deleted_date` in your database tables, for each model to which you attch the behaviour. You can name these differently if you want to but you'll have to remember to configure them when you attach the behaviour to the model.  
-Don't forget to set the `status_id` fields default value to your default status. For example `2` for `inactive`.
+You'll need to create the fields for the `status_id` and also the `deleted_date` in your database tables, for each model to which you attach the behaviour. You can name these differently if you want to but you'll have to remember to configure them when you attach the behaviour to the model.  
+Don't forget to set the `status_id` fields default value to your default status. For example `2` for `inactive`.  
+Also the `deleted_date` field will need to be a `DATETIME` field.
 
 ###Attach the behaviour to your model
 ```php
