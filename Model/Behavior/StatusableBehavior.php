@@ -38,7 +38,8 @@ class StatusableBehavior extends ModelBehavior {
             )
         ),
         'modifyModified' => true,   // Should the behaviour change the modified date when updating records?
-        'adminPrefix' => 'admin'    // What is the name of your admin prefix?
+        'adminPrefix' => 'admin',   // What is the name of your admin prefix?
+		'protected' => [3, 4]		// Statuses which are protected from deletion
     );
     
 /**
@@ -216,9 +217,34 @@ class StatusableBehavior extends ModelBehavior {
 			)
 		));
 		
-		$model->set($record);
-		$model->set($this->settings[$model->alias]['fields']['status'], key($this->settings[$model->alias]['statuses']['deleted']));
-		$model->set($this->settings[$model->alias]['fields']['deletedDate'], date('Y-m-d H:i:s'));
-		return (bool)$model->save();
+		if ($this->checkProtected($model, $id)) {
+			$model->set($record);
+			$model->set($this->settings[$model->alias]['fields']['status'], key($this->settings[$model->alias]['statuses']['deleted']));
+			$model->set($this->settings[$model->alias]['fields']['deletedDate'], date('Y-m-d H:i:s'));
+			return (bool)$model->save();
+		}
+		
+		return false;
+	}
+	
+/**
+ * Check if an item can be deleted or if it's protected
+ * 
+ * @param Model $model
+ * @param int $id
+ * @return boolean
+ */
+	protected function checkProtected(Model $model, $id) {
+        $item = $model->find('first', array(
+            'conditions' => array(
+                $model->alias . '.' . $model->primaryKey => $id
+            )
+        ));
+        
+        if (in_array($item[$model->alias][$this->settings[$model->alias]['fields']['status']], $this->settings[$model->alias]['protected'])) {
+            return false;
+        }
+        
+        return true;
 	}
 }

@@ -113,7 +113,7 @@ class StatusableBehaviorTest extends CakeTestCase {
 	}
 	
 /**
- * Ensure that when deleting and item it will not be shown again
+ * Ensure that when deleting an item it will not be shown again
  * 
  * @return void
  */
@@ -128,5 +128,19 @@ class StatusableBehaviorTest extends CakeTestCase {
 		]);
 		
 		$this->assertEmpty($result);
+	}
+	
+/**
+ * Make sure that if an item is protected that it cannot be deleted
+ * 
+ * @return void
+ */
+	public function testDeleteProtected() {
+		$this->Model->prefix = 'admin';
+		$this->Model->data['Example']['id'] = 3;
+		$result = $this->Model->delete(3);
+		$expected = false;
+		
+		$this->assertEqual($result, $expected);
 	}
 }
