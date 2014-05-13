@@ -38,7 +38,8 @@ class StatusableBehavior extends ModelBehavior {
             )
         ),
         'modifyModified' => true,   // Should the behaviour change the modified date when updating records?
-        'adminPrefix' => 'admin'    // What is the name of your admin prefix?
+        'adminPrefix' => 'admin',   // What is the name of your admin prefix?
+		'protected' => [3, 4]		// Statuses which are protected from deletion
     );
     
 /**
@@ -138,7 +139,11 @@ class StatusableBehavior extends ModelBehavior {
     public function beforeFind(Model $model, $query) {
         $liveConditions = array('status_id' => array_keys($this->settings[$model->alias]['statuses']['displayed']));
         $adminConditions = array('status_id !=' => key($this->settings[$model->alias]['statuses']['deleted']));
-        
+
+		if (!isset($query['conditions'])) {
+			$query['conditions'] = array();
+		}
+		
         if (isset($model->prefix) && $model->prefix == $this->settings[$model->alias]['adminPrefix']) {
             $query['conditions'] = array_merge($query['conditions'], $adminConditions);
             
@@ -212,8 +217,34 @@ class StatusableBehavior extends ModelBehavior {
 			)
 		));
 		
-		$model->set($record);
-		$model->set($this->settings[$model->alias]['fields']['status'], key($this->settings[$model->alias]['statuses']['deleted']));
-		return (bool)$model->save();
+		if ($this->checkProtected($model, $id)) {
+			$model->set($record);
+			$model->set($this->settings[$model->alias]['fields']['status'], key($this->settings[$model->alias]['statuses']['deleted']));
+			$model->set($this->settings[$model->alias]['fields']['deletedDate'], date('Y-m-d H:i:s'));
+			return (bool)$model->save();
+		}
+		
+		return false;
+	}
+	
+/**
+ * Check if an item can be deleted or if it's protected
+ * 
+ * @param Model $model
+ * @param int $id
+ * @return boolean
+ */
+	protected function checkProtected(Model $model, $id) {
+        $item = $model->find('first', array(
+            'conditions' => array(
+                $model->alias . '.' . $model->primaryKey => $id
+            )
+        ));
+        
+        if (in_array($item[$model->alias][$this->settings[$model->alias]['fields']['status']], $this->settings[$model->alias]['protected'])) {
+            return false;
+        }
+        
+        return true;
 	}
 }
