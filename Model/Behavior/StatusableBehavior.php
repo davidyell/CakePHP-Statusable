@@ -218,6 +218,7 @@ class StatusableBehavior extends ModelBehavior {
 		
 		$model->set($record);
 		$model->set($this->settings[$model->alias]['fields']['status'], key($this->settings[$model->alias]['statuses']['deleted']));
+		$model->set($this->settings[$model->alias]['fields']['deletedDate'], date('Y-m-d H:i:s'));
 		return (bool)$model->save();
 	}
 }
