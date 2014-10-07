@@ -31,12 +31,12 @@ INSERT INTO `statuses` (name, created, modified) VALUES
 ('Deleted', NOW(), NOW())
 ```
 
-You'll need to create the fields for the `status_id` and also the `deleted_date` in your database tables, for each model to which you attch the behaviour. You can name these differently if you want to but you'll have to remember to configure them when you attach the behaviour to the model.  
-Don't forget to set the `status_id` fields default value to your default status. For example `2` for `inactive`.
+You'll need to create the fields for the `status_id` and also the `deleted_date` in your database tables, for each model to which you attach the behaviour. You can name these differently if you want to but you'll have to remember to configure them when you attach the behaviour to the model.  
+Don't forget to set the `status_id` fields default value to your default status. For example `2` for `inactive`.  
+Also the `deleted_date` field will need to be a `DATETIME` field.
 
 ###Attach the behaviour to your model
 ```php
-<?php
 // Model/Example.php
     public $actsAs = array(
         'Statusable.Statusable' // If you want to configure the behaviour you can pass options in here
@@ -47,11 +47,20 @@ Configuration options can be passed to the behaviour here if your configuration 
 ###Add component to controller
 In your controller, you'll need to add the component. I'm hoping to be able to get rid of this at some point, but for the meantime, it's needed to get at the routing.
 ```php
-<?php
 // Controller/ExampleController.php
     public $components = array(
         'Statusable.Statusable'
     );
+```
+
+## Load statuses in views
+If you want to add a `status_id` field to your `add` and `edit` actions, the behaviour has a handy method to return a list of statuses.
+```php
+// Controller/ExampleController.php
+$statuses = $this->Example->getStatuses();
+
+// View/Example/edit.ctp
+echo $this->Form->input('status_id');
 ```
 
 ##Proposed features

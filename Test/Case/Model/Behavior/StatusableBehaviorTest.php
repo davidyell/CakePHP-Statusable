@@ -19,7 +19,10 @@ class StatusableBehaviorTest extends CakeTestCase {
  * 
  * @var array
  */
-	public $fixtures = array('plugin.statusable.user');
+	public $fixtures = array(
+		'plugin.statusable.user',
+		'plugin.statusable.status'
+	);
 	
 /**
  * Setup the test
@@ -42,7 +45,7 @@ class StatusableBehaviorTest extends CakeTestCase {
  * 
  * @return void
  */
-	public function testGetStatses() {
+	public function testGetStatuses() {
 		$expected = array(
 			'displayed' => array(
 				1 => 'Live',            // Displayed on the site, everyone can see it
@@ -110,12 +113,34 @@ class StatusableBehaviorTest extends CakeTestCase {
 	}
 	
 /**
- * TODO: Finish writing this test
+ * Ensure that when deleting an item it will not be shown again
+ * 
+ * @return void
  */
 	public function testDelete() {
 		$this->Model->data['Example']['id'] = 1;
-//		$result = $this->Model->delete($this->Model, 1, true);
-		$result = $this->Model->beforeDelete($this->Model);
-		var_dump($result);
+		$this->Model->delete(1);
+		
+		$result = $this->Model->find('first', [
+			'conditions' => [
+				'id' => 1
+			]
+		]);
+		
+		$this->assertEmpty($result);
+	}
+	
+/**
+ * Make sure that if an item is protected that it cannot be deleted
+ * 
+ * @return void
+ */
+	public function testDeleteProtected() {
+		$this->Model->prefix = 'admin';
+		$this->Model->data['Example']['id'] = 3;
+		$result = $this->Model->delete(3);
+		$expected = false;
+		
+		$this->assertEqual($result, $expected);
 	}
 }
