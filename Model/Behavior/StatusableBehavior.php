@@ -136,8 +136,8 @@ class StatusableBehavior extends ModelBehavior {
  * @return array
  */
     public function beforeFind(Model $model, $query) {
-        $liveConditions = array('status_id' => array_keys($this->settings[$model->alias]['statuses']['displayed']));
-        $adminConditions = array('status_id !=' => key($this->settings[$model->alias]['statuses']['deleted']));
+        $liveConditions = array($model->alias . '.status_id' => array_keys($this->settings[$model->alias]['statuses']['displayed']));
+        $adminConditions = array($model->alias . '.status_id !=' => key($this->settings[$model->alias]['statuses']['deleted']));
 
 		if (!isset($query['conditions'])) {
 			$query['conditions'] = array();
