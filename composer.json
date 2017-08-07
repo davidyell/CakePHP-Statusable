@@ -1,6 +1,13 @@
 {
     "name": "davidyell/statusable",
-    "description": "A behaviour to allow model records to have various statuses",
+    "description": "A behaviour to allow table records to have various statuses",
+    "keywords": ["cakephp3", "status", "filtering"],
+    "homepage": "https://github.com/davidyell/CakePHP-Statusable",
+    "support": {
+        "irc": "irc://irc.freenode.org/cakephp",
+        "issues": "https://github.com/davidyell/CakePHP-Statusable/issues",
+        "source": "https://github.com/davidyell/CakePHP-Statusable"
+    },
     "license": "MIT",
     "authors": [
         {
@@ -8,9 +15,24 @@
             "email": "neon1024@gmail.com"
         }
     ],
-    "minimum-stability": "dev",
     "type": "cakephp-plugin",
     "require": {
+        "php": ">=7.0",
+        "cakephp/cakephp": "^3.4",
         "composer/installers": "~1.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^6.3",
+        "cakephp/cakephp-codesniffer": "^3.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Statusable\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Statusable\\Tests\\": "tests/TestCase"
+        }
     }
 }
