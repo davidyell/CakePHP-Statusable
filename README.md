@@ -3,7 +3,7 @@ CakePHP-Statusable
 A [CakePHP](http://www.cakephp.org/) plugin which will take out the hassle of managing the status of items in a web application. I am always adding a `Status` model and `status_id` fields to my models so that I can mark them as active or inactive. 
 
 ## End of life
-This plugin has now reached end of life, and no further updates will be made. If you are looking for a CakePHP 3 plugin with similar functionality, please see the [https://github.com/usemuffin/trash](UseMuffin/Trash) plugin.
+This plugin has now reached end of life, and no further updates will be made. If you are looking for a CakePHP 3 plugin with similar functionality, please see the [UseMuffin/Trash](https://github.com/usemuffin/trash) plugin.
 
 ## What does it do?
 The behaviour, when attached to a model, will deal with the filtering of finds automatically so that items which have specific statuses will not be displayed to users. It will also allow soft deletion by just changing the status of a record to 'deleted' rather than removing it.  
